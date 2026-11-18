@@ -63,6 +63,11 @@ jobs:
     permissions:
       contents: read
       id-token: write
+    env:
+      # First release only. crates.io trusted publishing needs a crate that already exists,
+      # so 0.1.0 uses a CARGO_REGISTRY_TOKEN repository secret. After it is published, add the
+      # trusted publisher on crates.io, delete the secret and revoke the token.
+      BOOTSTRAP_TOKEN: ${{ secrets.CARGO_REGISTRY_TOKEN }}
     steps:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
         with:
@@ -71,7 +76,8 @@ jobs:
         with:
           toolchain: ${{ env.STABLE }}
       - uses: rust-lang/crates-io-auth-action@3268eb413133e2960fa4ae0e963ca76380c54cd9 # v1.0.6
+        if: env.BOOTSTRAP_TOKEN == ''
         id: auth
       - run: cargo publish --locked
         env:
-          CARGO_REGISTRY_TOKEN: ${{ steps.auth.outputs.token }}
+          CARGO_REGISTRY_TOKEN: ${{ steps.auth.outputs.token || env.BOOTSTRAP_TOKEN }}
