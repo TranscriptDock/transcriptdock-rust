@@ -1,0 +1,25 @@
+[package]
+name = "transcriptdock"
+version = "0.1.0"
+edition = "2021"
+rust-version = "1.85"
+resolver = "3"
+description = "Async client for the Transcript Dock video transcription API with explicit idempotency and bounded polling."
+license = "MIT"
+authors = ["Transcript Dock <transcriptdock@volods.com>"]
+repository = "https://github.com/TranscriptDock/transcriptdock-rust"
+homepage = "https://www.transcriptdock.com/docs"
+documentation = "https://docs.rs/transcriptdock"
+readme = "README.md"
+keywords = ["transcription", "transcript", "youtube", "tiktok", "api"]
+categories = ["api-bindings", "web-programming::http-client"]
+include = ["src/**/*.rs", "examples/**/*.rs", "README.md", "LICENSE", "Cargo.toml"]
+
+[dependencies]
+reqwest = { version = "=0.13.5", default-features = false, features = ["rustls", "json"] }
+serde_json = "=1.0.154"
+tokio = { version = "=1.54.1", features = ["time"] }
+url = "=2.5.8"
+
+[dev-dependencies]
+tokio = { version = "=1.54.1", features = ["macros", "rt-multi-thread"] }
