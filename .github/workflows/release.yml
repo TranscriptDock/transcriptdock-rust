@@ -37,8 +37,6 @@ jobs:
         with:
           toolchain: ${{ env.STABLE }}
           components: clippy
-      # Bootstrap only: removed once Cargo.lock is committed.
-      - run: test -f Cargo.lock || cargo generate-lockfile
       - run: cargo clippy --locked --all-targets -- -D warnings
   test:
     runs-on: ubuntu-latest
@@ -53,16 +51,9 @@ jobs:
       - uses: dtolnay/rust-toolchain@df2a88e9fe4098bad09cb42c3dec7187f15861fc # master
         with:
           toolchain: ${{ matrix.rust == 'msrv' && env.MSRV || env.STABLE }}
-      # Bootstrap only: removed once Cargo.lock is committed.
-      - run: test -f Cargo.lock || cargo generate-lockfile
-      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
-        if: matrix.rust == 'stable'
-        with:
-          name: cargo-lock
-          path: Cargo.lock
       - run: cargo test --locked
       - run: python3 .ci/check.py
-      - run: cargo publish --dry-run --locked --allow-dirty
+      - run: cargo publish --dry-run --locked
         if: matrix.rust == 'stable'
   publish:
     if: github.event_name == 'workflow_dispatch' && inputs.publish && github.ref == 'refs/heads/main'
